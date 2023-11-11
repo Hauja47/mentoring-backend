@@ -11,7 +11,7 @@ permissions:
   actions: 'write'
   
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,22 +26,16 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
-    - run: yarn build
-    - run: yarn test
-  generate-swagger-file:
-    runs-on: ubuntu-latest
-    needs: build
-    steps: 
-      - name: Generate openapi.json
-        run: yarn jest -t api-file-generate
-      - name: Upload openapi.json
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          name: api-spec-file
-          path: swagger.json
+    - name: Generate openapi.json
+      run: yarn jest -t api-file-generate
+    - name: Upload openapi.json
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: api-spec-file
+        path: swagger.json
   deploy:
     runs-on: ubuntu-latest
-    needs: generate-swagger-file
+    needs: generate
     steps:
       - name: Download openapi.json
         uses: actions/download-artifact@v2.1.1
