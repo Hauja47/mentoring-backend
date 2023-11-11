@@ -32,7 +32,9 @@ jobs:
       uses: actions/upload-artifact@v3.1.3
       with:
         name: api-spec-file
-        path: swagger.json
+        path: ./swagger.json
+        if-no-files-found: error
+        retention-days: 1
   deploy:
     runs-on: ubuntu-latest
     needs: generate
