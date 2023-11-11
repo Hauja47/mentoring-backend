@@ -27,7 +27,7 @@ jobs:
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
     - name: Generate openapi.json
-      run: yarn jest -t api-file-generate
+      run: yarn jest -i test/api-file-generate.e2e-spec.ts -c test/jest-e2e.json
     - name: Upload openapi.json
       uses: actions/upload-artifact@v3.1.3
       with:
