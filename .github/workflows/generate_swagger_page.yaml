@@ -41,7 +41,7 @@ jobs:
           path: swagger.json
   deploy:
     runs-on: ubuntu-latest
-    needs: build-and-generate-file
+    needs: generate-swagger-file
     steps:
       - name: Download openapi.json
         uses: actions/download-artifact@v2.1.1
