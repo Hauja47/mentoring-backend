@@ -1,0 +1,46 @@
+name: Generate Swagger Page
+
+on:
+  push:
+    branches:
+        - master
+        - dev
+  workflow_dispatch:     
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
+    - run: yarn install --frozen-lockfile
+    - run: nest build
+    - run: nest test
+  generate-swagger-json:
+    runs-on: ubuntu-latest
+    steps:
+      - run: yarn start
+  deploy:
+    runs-on: ubuntu-latest
+    needs: generate-swagger-json
+    steps:
+      - name: Generate Swagger UI
+        uses: Legion2/swagger-ui-action@v1.1.6
+        with:
+          output: swagger-ui
+          spec-file: swagger.json
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-github-pages@v3.1.12
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: swagger-ui
+    
