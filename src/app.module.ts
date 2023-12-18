@@ -1,28 +1,29 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MentorModule } from './mentor/mentor.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MentorsModule } from './mentors/mentors.module';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import ormConfig from './config/orm.config';
+import { SkillsModule } from './skills/skills.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CoursesModule } from './courses/courses.module';
+import { RatingCoursesModule } from './rating-courses/rating-courses.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [ormConfig],
-    }),
+    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
-      imports: [
-        ConfigModule.forRoot({
-          load: [ormConfig],
-        }),
-      ],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        configService.getOrThrow('ormConfig'),
+      useFactory: () => ({
+        url: process.env.DATABASE_URL,
+        type: 'postgres',
+        autoLoadEntities: true,
+      }),
     }),
-    MentorModule,
+    MentorsModule,
+    SkillsModule,
+    CategoriesModule,
+    CoursesModule,
+    RatingCoursesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

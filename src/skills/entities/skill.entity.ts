@@ -5,19 +5,19 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Mentor } from './mentor.entity';
+import { Mentor } from '../../mentors/entities/mentor.entity';
 
 @Entity()
-export default class Skill {
+export class Skill {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @CreateDateColumn()
   created_at: Date;
 
-  @ManyToMany((type) => Mentor, (mentor) => mentor.skills)
+  @ManyToMany(() => Mentor, (mentor) => mentor.skills)
   mentors: Mentor[];
 }
